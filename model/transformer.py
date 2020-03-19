@@ -5,6 +5,7 @@ import math
 import argparse
 import time
 import copy
+from torchsummary import summary
 
 
 
@@ -239,3 +240,8 @@ for p in model.parameters():
     if p.dim() > 1:
         nn.init.xavier_uniform_(p)
 optim = torch.optim.Adam(model.parameters(), lr=0.0001, betas=(0.9, 0.98), eps=1e-9)
+
+# print(summary(model))
+print(model)
+
+
