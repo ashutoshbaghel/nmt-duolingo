@@ -28,7 +28,7 @@ class NoamOpt:
     def zero_grad(self):
         self.optimizer.zero_grad()
 
-### Usage: 
+### Usage in train(): 
 # optimizer = NoamOpt(hid_size, 1, 2000,
 # torch.optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9))
 
