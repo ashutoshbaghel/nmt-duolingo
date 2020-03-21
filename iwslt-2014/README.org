@@ -1,0 +1,46 @@
+* Preprocessing of the data
+
+This is the directory with the required code for preprocessing. We experimented with two kinds of preprocessing: 
+
+1. Spacy
+2. Subword-bpe
+
+Although initial experiments with Spacy led us to have slightly better BELU score with Spacy, we are looking to replicate the baseline as-is and for that we are going to be usign the pretokenized data that was provided to us by the TAs and then process them using the [[https://github.com/rsennrich/subword-nmt][subword-nmt]] library. This can be used and replicated using the following commands: 
+
+#+begin_src shell :tangle preprocess.sh
+  #!/usr/bin/env bash
+
+  echo 'Cloning the Subword NMT repository (for BPE pre-processing)...'
+  git clone https://github.com/rsennrich/subword-nmt.git
+
+  src=de
+  tgt=en
+  prep=data-tokenized
+  output=data
+
+  BPEROOT=subword-nmt/subword_nmt
+  BPE_TOKENS=10000
+  TRAIN=$output/train.en-de
+  BPE_CODE=$output/code
+
+
+  rm -f $TRAIN
+  for l in $src $tgt; do
+      cat $prep/train.$l >> $TRAIN
+  done
+
+  echo "learn_bpe.py on ${TRAIN}..."
+  python $BPEROOT/learn_bpe.py -s $BPE_TOKENS < $TRAIN > $BPE_CODE
+
+  for L in $src $tgt; do
+      for f in train.$L valid.$L test.$L; do
+          echo "apply_bpe.py to ${f}..."
+          python $BPEROOT/apply_bpe.py -c $BPE_CODE < $prep/$f > $output/$f
+      done
+  done
+
+  echo "generating vocab for both languages...."
+  for L in $src $tgt; do
+      python $BPEROOT/get_vocab.py -i $output/train.$L -o $output/vocab.$TOKEN.$L
+  done
+#+end_src
