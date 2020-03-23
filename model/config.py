@@ -20,6 +20,4 @@ class Configuration(object):
     self.trg_pad = trg.vocab.stoi['<pad>']
     self.k = 10
     self.max_len = 80
-
-
-opt = Configuration(src, trg)
+    self.device = torch.device("cuda:0" if use_cuda else "cpu")
